@@ -45,6 +45,9 @@ wardrobe_ai/
 
 ### **Setup & Run**
 
+0. **Checkout to feature-branch**
+   All the features currently are in the feature-branch. So checkout to that.
+
 1. **Install dependencies**
 
    ```bash
@@ -78,3 +81,4 @@ wardrobe_ai/
   * Form-data:
 
     * `image`: Frontal face photo (JPEG/PNG).
+
