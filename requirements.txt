@@ -1,0 +1,6 @@
+rembg[cpu]
+requests
+python-dotenv
+opencv-python
+mediapipe
+numpy
