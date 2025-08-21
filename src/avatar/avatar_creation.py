@@ -5,6 +5,9 @@ from typing import Dict, Any
 from src.utils import encode_image_to_base64
 from src.configs.settings import BFL_API_KEY
 
+OUTPUT_DIR = os.path.join("src", "output", "avatar_creation_service")
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
 def validate_and_merge_config(config: Dict[str, Any]) -> Dict[str, Any]:
     """Validate and merge user config with default FULL_BODY_GENERATION_CONFIG."""
     final_config = {**config}
