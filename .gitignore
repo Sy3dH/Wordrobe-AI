@@ -1,0 +1,45 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / Packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# Environment variable files
+.env
+.env.*
+*.env
+
+# PyCharm project settings
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Logs & cache
+*.log
+*.cache
+
+#Sample folders
+sample/
+output/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+
