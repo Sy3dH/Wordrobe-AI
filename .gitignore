@@ -25,5 +25,5 @@ env/
 Thumbs.db
 
 # Ignore sample and output directories
-sample/
+sample/**
 output/
