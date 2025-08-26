@@ -24,8 +24,8 @@ It leverages the **Flux-pro Kontext** model for generative body completion.
 
 ### **Checklist**
 
-* [x] **Avatar Creation** → `/avatar-creation` (Completed)
-* [x] **Avatar Cropping** (Completed)
+* [x] **Avatar Creation** →  `/avatar-creation` (Completed)
+* [x] **Avatar Cropping** → `/crop-avatar` (Completed)
 * [ ] **VTON (Virtual Try-On) of Clothes**
 * [ ] **Pose Validation for VTON Accuracy**
 
@@ -87,6 +87,7 @@ wardrobe_ai/
   * Form-data:
 
     * `image`: Frontal face photo (JPEG/PNG).
+
 
 
 
