@@ -15,6 +15,11 @@ It leverages the **Flux-pro Kontext** model for generative body completion.
 * Adds default clothing while maintaining accurate size and proportions.
 * Powered by **Flux-pro Kontext**.
 
+#### **Step 3: Auto-Cropping of the Generative Body**
+
+* Given the photo, the main object is removed from the photo.
+* It uses rembg package and uses a U-squared net to do SOD (Salient Object Detection)
+
 ---
 
 ### **Checklist**
@@ -46,13 +51,13 @@ wardrobe_ai/
 ### **Setup & Run**
 
 0. **Checkout to feature-branch**
-   All the features currently are in the feature-branch. So checkout to that.
+   All the features currently are in the feature-branch. So checkout to @feature-branch.
 
 1. **Install dependencies**
-
    ```bash
    pip install -r requirements.txt
    ```
+   The environment will require Python with a version of 3.9. This will make sure Mediapipe works.
 
 2. **Set environment variables**
    Create a `.env` file:
@@ -60,7 +65,8 @@ wardrobe_ai/
    ```
    BFL_API_KEY=your_api_key_here
    ```
-
+   To get the BFL API, log onto [BFL](http://www.bfl.ai/) to get the API key.
+   
 3. **Run the API**
 
    ```bash
@@ -81,5 +87,6 @@ wardrobe_ai/
   * Form-data:
 
     * `image`: Frontal face photo (JPEG/PNG).
+
 
 
