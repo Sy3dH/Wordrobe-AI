@@ -1,0 +1,29 @@
+# Existing ignores
+__pycache__/
+*.py[cod]
+*$py.class
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+venv/
+env/
+.venv/
+.env/
+.env
+.env.*
+*.env
+.idea/
+*.iml
+*.ipr
+*.iws
+*.log
+*.cache
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
+
+# Ignore sample and output directories
+sample/**
+output/

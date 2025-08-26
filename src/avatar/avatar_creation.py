@@ -1,14 +1,12 @@
 import os
 import time
 import requests
-from dotenv import load_dotenv
 from typing import Dict, Any
 from src.utils import encode_image_to_base64
-from src.configs.configs import FULL_BODY_GENERATION_CONFIG
+from src.configs.settings import BFL_API_KEY
 
-load_dotenv()
-BFL_API_KEY = os.getenv("BFL_API_KEY")
-
+OUTPUT_DIR = os.path.join("src", "output", "avatar_creation_service")
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def validate_and_merge_config(config: Dict[str, Any]) -> Dict[str, Any]:
     """Validate and merge user config with default FULL_BODY_GENERATION_CONFIG."""
@@ -31,7 +29,7 @@ def validate_and_merge_config(config: Dict[str, Any]) -> Dict[str, Any]:
 
 def generate_flux_image_with_reference(
     image_path: str,
-    config: Dict[str, Any] = None,
+    config: Dict[str, Any],
     poll_interval: float = 1.0,
     output_dir: str = "output"
 ) -> Dict[str, Any]:
@@ -60,7 +58,6 @@ def generate_flux_image_with_reference(
         "safety_tolerance": final_config["safety_tolerance"],
     }
 
-    # Step 1: Submit job
     response = requests.post(url, headers=headers, json=payload)
     if response.status_code != 200:
         raise Exception(f"Initial request failed: {response.status_code}, {response.text}")
@@ -112,9 +109,3 @@ def generate_flux_image_with_reference(
         elif status in ["Error", "Failed"]:
             print(f"❌ Generation failed: {result}")
             return {"status": status, "error": result}
-
-if __name__ == "__main__":
-    result = generate_flux_image_with_reference(
-        image_path="D:\\9D Tech Work\\Wardrobe-POC\\POC\\sample\\full_body\\1.jpg",
-        config=FULL_BODY_GENERATION_CONFIG
-    )
