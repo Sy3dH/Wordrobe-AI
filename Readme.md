@@ -87,7 +87,14 @@ wardrobe_ai/
   * Form-data:
 
     * `image`: Frontal face photo (JPEG/PNG).
+#### `POST /crop-avatar`
 
+* **Description**: Crops the main object out of the background.
+* **Request**:
+
+  * Form-data:
+
+    * `image`: Image of the avatar (JPEG/PNG/WEBP).
 
 
 
