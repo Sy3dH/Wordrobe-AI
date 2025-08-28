@@ -1,12 +1,17 @@
+import uvicorn
 from fastapi import FastAPI
-from src.routes import crop_avatar_route, create_avatar_route
-import src.configs.settings
+from src.routes import crop_avatar_route, create_avatar_route, upscale_avatar_route
 
 app = FastAPI(title="Wordrobe AI APIs")
 
 app.include_router(crop_avatar_route.router)
 app.include_router(create_avatar_route.router)
+app.include_router(upscale_avatar_route.router)
 
 @app.get("/")
 def root():
     return {"message": "Hi from Wordrobe AI. 👕👖 Let's get you dressed up 👗👘"}
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, port=8002)
