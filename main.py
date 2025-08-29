@@ -1,3 +1,6 @@
+import sys
+import torchvision.transforms.functional as F
+sys.modules['torchvision.transforms.functional_tensor'] = F
 import uvicorn
 from fastapi import FastAPI
 from src.routes import crop_avatar_route, create_avatar_route, upscale_avatar_route
