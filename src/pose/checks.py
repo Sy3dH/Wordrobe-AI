@@ -1,4 +1,4 @@
-from src.utils import get_xy, point_in_polygon
+from src.utils import get_xy, point_in_polygon, angle_between_points
 
 def check_arms_crossing_midline(mp_pose, landmarks, w, h):
 
@@ -63,3 +63,24 @@ def check_legs_crossed(mp_pose, landmarks, w, h):
     ankles_crossed = la[0] < ra[0]
 
     return knees_crossed or ankles_crossed
+
+def check_sitting_position(mp_pose, landmarks, w, h, angle_threshold=120):
+    """
+    Detects sitting by checking hip-knee-ankle angles and vertical alignment.
+    angle_threshold: min angle (deg) to be considered standing (lower = sitting).
+    """
+    # Left and right leg angles (hip-knee-ankle)
+    l_hip = get_xy(landmarks[mp_pose.PoseLandmark.LEFT_HIP], w, h)
+    l_knee = get_xy(landmarks[mp_pose.PoseLandmark.LEFT_KNEE], w, h)
+    l_ankle = get_xy(landmarks[mp_pose.PoseLandmark.LEFT_ANKLE], w, h)
+
+    r_hip = get_xy(landmarks[mp_pose.PoseLandmark.RIGHT_HIP], w, h)
+    r_knee = get_xy(landmarks[mp_pose.PoseLandmark.RIGHT_KNEE], w, h)
+    r_ankle = get_xy(landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE], w, h)
+
+    left_angle = angle_between_points(l_hip, l_knee, l_ankle)
+    right_angle = angle_between_points(r_hip, r_knee, r_ankle)
+
+    # If both legs have knee angles significantly smaller than 160-180°, likely bent (sitting)
+    sitting = (left_angle < angle_threshold) and (right_angle < angle_threshold)
+    return sitting
