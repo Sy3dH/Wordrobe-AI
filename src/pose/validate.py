@@ -9,7 +9,7 @@ logging = getLogger(__name__)
 
 def validate_a_pose(image):
     h, w, _ = image.shape
-
+    mp_pose = mp.solutions.pose
     with mp_pose.Pose(static_image_mode=True) as pose:
         results = pose.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 
@@ -40,7 +40,6 @@ def validate_a_pose(image):
         return POSE_VALIDATION_CONFIG
 
 if __name__ == "__main__":
-    mp_pose = mp.solutions.pose
     image_path = "D:\9D Tech Work\Wardrobe-POC\POC\sample\\validation_check\criss cross arms\\2.jpg"
     image = cv2.imread(image_path)
     print(validate_a_pose(image))
