@@ -46,34 +46,46 @@ wardrobe_ai/
 └─ requirements.txt
 ```
 
----
-
 ### **Setup & Run**
 
-0. **Checkout to feature-branch**
-   All the features currently are in the feature-branch. So checkout to @feature-branch.
+0. **Checkout to development branch**
+   All features are currently in the `development` branch.
 
-1. **Install dependencies**
+   ```bash
+   git checkout development
+   ```
+
+1. **Create and activate a virtual environment**
+   Ensure you have **Python 3.9** installed.
+
+   ```bash
+   python3.9 -m venv venv
+   source venv/bin/activate     # On macOS/Linux
+   venv\Scripts\activate        # On Windows
+   ```
+
+2. **Install dependencies**
+
    ```bash
    pip install -r requirements.txt
    ```
-   The environment will require Python with a version of 3.9. This will make sure Mediapipe works.
 
-2. **Set environment variables**
-   Create a `.env` file:
+3. **Set environment variables**
+   Create a `.env` file in the project root:
 
    ```
    BFL_API_KEY=your_api_key_here
    ```
-   To get the BFL API, log onto [BFL](http://www.bfl.ai/) to get the API key.
-   
-3. **Run the API**
+
+   To get the BFL API key, log in to [BFL](http://www.bfl.ai/).
+
+4. **Run the API**
 
    ```bash
    uvicorn main:app --port 8000 --reload
    ```
 
-   * OpenAPI Docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+   OpenAPI Docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
 ---
 
@@ -158,5 +170,6 @@ wardrobe_ai/
      "avatar_url": "/output/avatar_123.png"
    }
    ```
+
 
 
