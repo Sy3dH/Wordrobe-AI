@@ -87,6 +87,18 @@ wardrobe_ai/
   * Form-data:
 
     * `image`: Frontal face photo (JPEG/PNG).
+ * Output
+   **Response:
+   A generated full-body avatar image with accurate proportions.
+
+   Response contains:
+   ```
+   {
+     "status": "success",
+     "avatar_url": "/output/avatar_123.png"
+   }
+   ```
+
 #### `POST /crop-avatar`
 
 * **Description**: Crops the main object out of the background.
@@ -96,5 +108,55 @@ wardrobe_ai/
 
     * `image`: Image of the avatar (JPEG/PNG/WEBP).
 
+ * Output
+   **Response:
+   Cropped avatar (background removed).
+
+   Response contains:
+   ```
+   {
+     "status": "success",
+     "avatar_url": "/output/avatar_123.png"
+   }
+   ```
+
+#### `POST /validate-pose`
+* **Description**: Checks if the uploaded image is in A-pose (correct standing position for VTON).
+* **Request**:
+  * Form-data:
+    * `image`: Image of the avatar (JPEG/PNG/WEBP).
+* Output
+  **Response:
+   ```   
+   {
+        "is_apose": false,
+        "obstructions": {
+          "torso": true,
+          "hips": false,
+          "legs": false,
+          "arms_crossing": false,
+          "legs_crossing": true,
+          "legs_on_torso": false,
+          "sitting": false
+        },
+        "comments": "Obstructions detected."
+      }
+   ```
+   
+#### `POST /upscale-image`
+* **Description**: Upscale an image according to the user desire (2x,4x ...).
+* **Request**:
+  * Form-data:
+    * `image`: Image of the avatar (JPEG/PNG/WEBP).
+    * `outscale`: int (4 is default)
+    * `face_enhance`: boolean ( To enhance the pixelated face)
+* Output
+  **Response:
+   ```   
+   {
+     "status": "success",
+     "avatar_url": "/output/avatar_123.png"
+   }
+   ```
 
 
