@@ -6,3 +6,5 @@ mediapipe
 numpy
 fastapi
 python-multipart
+realesrgan
+basicsr
