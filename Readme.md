@@ -26,8 +26,9 @@ It leverages the **Flux-pro Kontext** model for generative body completion.
 
 * [x] **Avatar Creation** →  `/avatar-creation` (Completed)
 * [x] **Avatar Cropping** → `/crop-avatar` (Completed)
-* [ ] **VTON (Virtual Try-On) of Clothes**
-* [ ] **Pose Validation for VTON Accuracy**
+* [x] **Pose Validation for VTON Accuracy** (Completed)
+* [x] **Upscaling of the Avatar** (Completed)
+* [ ] **VTON (Virtual Try-On) of Clothes** (In-progress)
 
 ---
 
@@ -38,9 +39,13 @@ wardrobe_ai/
 ├─ src/
 │  ├─ configs/                  # Default configs for generation
 │  ├─ routes/                   # API routes
+│  ├─ crop/                     # Logic for cropping 
+│  ├─ pose/                     # Logic for pose validation
+|  ├─ output/                   # Generated outputs
+│  ├─ prompts/                  # Prompt for generating 2D avatar
+│  ├─ upscale/                  # Upscaling the image
 │  ├─ avatar/                   # Avatar creation logic                   
-├─ output/                      # Generated outputs
-├─ sample/                      # Sample input images
+├─ sample/                      # Sample input images -> Not in repository
 ├─ main.py                      # FastAPI entry point
 ├─ utils.py                     # Helper functions
 └─ requirements.txt
@@ -170,6 +175,7 @@ wardrobe_ai/
      "avatar_url": "/output/avatar_123.png"
    }
    ```
+
 
 
 
