@@ -20,6 +20,14 @@ It leverages the **Flux-pro Kontext** model for generative body completion.
 * Given the photo, the main object is removed from the photo.
 * It uses rembg package and uses a U-squared net to do SOD (Salient Object Detection)
 
+#### **Step 4: Upscaling the Generative Body**
+
+* Given the photo, the face and the body is upscaled.
+* It uses realersgan and GFPGAN to improve the body and the face respectively.
+
+#### **Step 5: Virtual Try-on** (In progress)
+
+* Given the model and the clothing, the output image is saved showing the model wearing the clothes.
 ---
 
 ### **Checklist**
@@ -175,6 +183,7 @@ wardrobe_ai/
      "avatar_url": "/output/avatar_123.png"
    }
    ```
+
 
 
 
