@@ -2,16 +2,22 @@ import sys
 import torchvision.transforms.functional as F
 sys.modules['torchvision.transforms.functional_tensor'] = F
 import uvicorn
+import os
 from fastapi import FastAPI
 from src.routes import (crop_avatar_route,
-                        create_avatar_route, upscale_avatar_route, validation_avatar_pose)
+                        create_avatar_route,
+                        upscale_avatar_route,
+                        validation_avatar_pose)
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(title="Wordrobe AI APIs")
+output_dir = os.path.join(os.path.dirname(__file__), "src", "output")
 
 app.include_router(crop_avatar_route.router)
 app.include_router(create_avatar_route.router)
 app.include_router(validation_avatar_pose.router)
 app.include_router(upscale_avatar_route.router)
+app.mount("/output", StaticFiles(directory=output_dir), name="output")
 
 @app.get("/")
 def root():
