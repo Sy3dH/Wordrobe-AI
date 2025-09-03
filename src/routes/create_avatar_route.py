@@ -28,7 +28,7 @@ async def avatar_creation(image: UploadFile = File(...)):
             image_path=tmp_path,
             config=FULL_BODY_GENERATION_CONFIG
         )
-        return FileResponse(result["saved_path"])
+        return {"status": "success","result":FileResponse(result["saved_path"])}
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
