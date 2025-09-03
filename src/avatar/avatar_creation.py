@@ -31,7 +31,7 @@ def generate_flux_image_with_reference(
     image_path: str,
     config: Dict[str, Any],
     poll_interval: float = 1.0,
-    output_dir: str = "output"
+    output_dir: str = OUTPUT_DIR
 ) -> Dict[str, Any]:
     """
     Generate image using FLUX API with reference image and config.
