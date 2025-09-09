@@ -8,3 +8,4 @@ fastapi
 python-multipart
 realesrgan
 basicsr
+google-genai
