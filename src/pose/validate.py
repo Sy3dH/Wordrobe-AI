@@ -3,9 +3,6 @@ import mediapipe as mp
 from src.pose.checks import (check_arms_crossing_midline,check_legs_crossed,check_legs_obstructing_torso,
                              check_wrists_on_torso)
 from src.configs.configs import POSE_VALIDATION_CONFIG
-from logging import getLogger
-
-logging = getLogger(__name__)
 
 def validate_a_pose(image):
     h, w, _ = image.shape

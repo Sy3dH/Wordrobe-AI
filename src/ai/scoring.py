@@ -1,5 +1,6 @@
 from google import genai
 from google.genai import types
+from src.prompts.prompts import AI_SCORING_WITH_CLOTHING_PROMPT, AI_SCORING_PROMPT
 from src.configs.settings import GOOGLE_API_KEY
 import json
 
@@ -18,35 +19,7 @@ def score_outfit_with_clothing(person_image_path: str, clothing_image_path: str,
         clothing_bytes = f.read()
 
     # Instructions for AI
-    system_prompt = """
-    You are a fashion assistant.
-    The first image is a person. The second image is the clothing they will wear.
-    Imagine the clothing on the person and evaluate the resulting outfit based on:
-    - Color Harmony
-    - Fit & Proportion
-    - Style Consistency
-    - Trend Alignment
-    - Occasion Appropriateness
-    - Accessories & Detailing
-
-    For each category:
-    - Give a score between 1 and 10.
-    - Provide a 1–2 sentence explanation.
-
-    Return JSON strictly in this format:
-    {
-      "ratings": {
-        "color_harmony": {"score": int, "explanation": str},
-        "fit_proportion": {"score": int, "explanation": str},
-        "style_consistency": {"score": int, "explanation": str},
-        "trend_alignment": {"score": int, "explanation": str},
-        "occasion_appropriateness": {"score": int, "explanation": str},
-        "accessories_detailing": {"score": int, "explanation": str}
-      },
-      "average_score": float,
-      "overall_summary": str
-    }
-    """
+    system_prompt = AI_SCORING_WITH_CLOTHING_PROMPT
 
     # Generate content with interleaved images + text
     response = client.models.generate_content(
@@ -77,26 +50,7 @@ def score_outfit(image_path: str, user_prompt: str = "") -> dict:
     """
     client = genai.Client()
 
-    system_prompt = """
-    You are a fashion assistant. 
-    Evaluate the outfit in the image based on:
-    Color Harmony, Fit & Proportion, Style Consistency,
-    Trend Alignment, Occasion Appropriateness, Accessories & Detailing.
-
-    Return JSON with:
-    {
-      "ratings": {
-        "color_harmony": {"score": int, "explanation": str},
-        "fit_proportion": {"score": int, "explanation": str},
-        "style_consistency": {"score": int, "explanation": str},
-        "trend_alignment": {"score": int, "explanation": str},
-        "occasion_appropriateness": {"score": int, "explanation": str},
-        "accessories_detailing": {"score": int, "explanation": str}
-      },
-      "average_score": float,
-      "overall_summary": str
-    }
-    """
+    system_prompt = AI_SCORING_PROMPT
 
     with open(image_path, "rb") as f:
         img_bytes = f.read()
