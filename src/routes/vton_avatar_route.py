@@ -1,3 +1,5 @@
+import tempfile
+import shutil
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from src.VTON.try_on_service import make_fitroom_request, get_fitroom_task_status
 
@@ -13,19 +15,28 @@ async def tryon(
 ):
     """
     Create a try-on task in Fitroom.
+    Saves uploaded files to temp paths and calls make_fitroom_request.
     Returns task_id and status (CREATED).
     """
     try:
-        cloth_bytes = await cloth_image.read()
-        model_bytes = await model_image.read()
+        # Save uploaded images to temp files
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as cloth_tmp:
+            shutil.copyfileobj(cloth_image.file, cloth_tmp)
+            cloth_path = cloth_tmp.name
 
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as model_tmp:
+            shutil.copyfileobj(model_image.file, model_tmp)
+            model_path = model_tmp.name
+
+        # Call your existing function (expects file paths)
         result = make_fitroom_request(
-            cloth_image=cloth_bytes,
-            model_image=model_bytes,
+            cloth_image=cloth_path,
+            model_image=model_path,
             cloth_type=cloth_type,
             hd_mode=hd_mode,
         )
-        return {"task": result}
+
+        return result
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -46,7 +57,6 @@ async def tryon_status(task_id: str):
             "progress": result.get("progress", 0),
         }
 
-        # Only add signed URL if task completed
         if result.get("status") == "COMPLETED":
             response["download_signed_url"] = result.get("download_signed_url")
 
