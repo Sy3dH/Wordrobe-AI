@@ -13,7 +13,7 @@ app.include_router(crop_avatar_route.router)
 app.include_router(create_avatar_route.router)
 app.include_router(validation_avatar_pose.router)
 app.include_router(upscale_avatar_route.router)
-#app.include_router(vton_avatar_route)
+app.include_router(vton_avatar_route.router)
 
 @app.get("/")
 def root():
