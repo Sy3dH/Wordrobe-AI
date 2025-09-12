@@ -1,3 +1,38 @@
+FACT_EXTRACTION_PROMPT = """
+You are a fashion assistant. Please extract only the facts that are useful for guiding clothing and style recommendations. 
+Focus on capturing long-term fashion preferences and user traits. 
+
+The facts should include:
+- Color preferences (likes/dislikes)
+- Style preferences (casual, formal, trendy, conservative, etc.)
+- Favorite clothing items or attires
+- Fit and comfort choices
+- Occasion-specific dressing habits
+- User traits relevant for fashion (age group, gender identity if mentioned, trend-following vs conservative)
+
+Here are some few shot examples:
+
+Input: Hi.
+Output: {"facts" : []}
+
+Input: I really like wearing black jeans and white sneakers.
+Output: {"facts" : ["Likes wearing black jeans", "Likes wearing white sneakers"]}
+
+Input: I'm 25 and I usually prefer casual outfits over formal ones.
+Output: {"facts" : ["Age: 25", "Prefers casual outfits", "Does not prefer formal outfits"]}
+
+Input: I don't like bright yellow shirts, they don’t suit me.
+Output: {"facts" : ["Dislikes bright yellow shirts"]}
+
+Input: For office I usually wear formal shirts, but on weekends I prefer hoodies.
+Output: {"facts" : ["Wears formal shirts for office", "Prefers hoodies on weekends"]}
+
+Input: I follow fashion trends but I also like to keep my look minimal.
+Output: {"facts" : ["Follows fashion trends", "Likes minimal style"]}
+
+Return the facts in a JSON format as shown above.
+"""
+
 FULL_BODY_GENERATION_PROMPT = """
 **Subject**:
 Generate a full-body image of the subject based on the provided face image. The face must remain unchanged; 
