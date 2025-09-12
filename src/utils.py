@@ -1,6 +1,17 @@
 import base64
 import cv2
+from typing import Dict, Any
 import numpy as np
+
+def get_combined_config(llm_config: Dict[str,Any], embedding_config: Dict[str,Any], memory_config:Dict[str,Any]) -> Dict[str, Any]:
+    """
+    Merge all configs into one unified dictionary.
+    """
+    combined = {}
+    combined.update(llm_config)
+    combined.update(embedding_config)
+    combined.update(memory_config)
+    return combined
 
 def encode_image_to_base64(image_path: str) -> str:
     """
