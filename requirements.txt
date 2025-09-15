@@ -9,3 +9,5 @@ python-multipart
 realesrgan
 basicsr
 google-genai
+firebase-admin
+google-auth
