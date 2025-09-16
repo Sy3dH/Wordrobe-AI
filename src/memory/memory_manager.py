@@ -39,7 +39,7 @@ class MemoryManager:
         """Store conversation context in STM"""
         return self.stm.store(context_data, user_id)
 
-    def get_user_profile(self, user_id: str) -> Dict[str, Any]:
+    def get_user_profile(self, user_id: str, session_id:str) -> Dict[str, Any]:
         """
         Get comprehensive user profile combining LTM and STM
 
@@ -47,7 +47,7 @@ class MemoryManager:
             Complete user profile for fashion assistance
         """
         ltm_data = self.ltm.get_user_preferences(user_id)
-        stm_data = self.stm.get_recent_context(user_id)
+        stm_data = self.stm.get_recent_context("recent_conversation",user_id, session_id)
 
         return {
             "user_id": user_id,
@@ -57,43 +57,65 @@ class MemoryManager:
         }
 
 if __name__ == "__main__":
-    #ltm_config = get_combined_config(LTM_CONFIG, EMBEDDING_CONFIG, LTM_LLM_CONFIG)
-    #stm_config = get_combined_config(STM_CONFIG, EMBEDDING_CONFIG, LLM_CONFIG)
-    #print(ltm_config)
+
     m = MemoryManager()
-    test_json = {
+    test_json_1 = {
     "role": "user",
     "content": "I prefer wearing pastel colors in summer, especially light blue and mint green.",
     "category": "color_preference"
     }
 
-    test_json_list = [
-  {
-    "role": "user",
-    "content": "I prefer wearing pastel colors in summer, especially light blue and mint green.",
-    "category": "color_preference"
-  },
-  {
+    test_json_2 = {
     "role": "user",
     "content": "I usually wear casual outfits like jeans and sneakers during weekdays.",
     "category": "style_history"
-  },
-  {
-    "role": "user",
-    "content": "I cannot wear wool sweaters because they make my skin itchy.",
-    "category": "allergy_constraint"
-  },
-  {
-    "role": "user",
-    "content": "For weddings, I like wearing traditional outfits with embroidery.",
-    "category": "occasion_wear"
-  },
-  {
-    "role": "user",
-    "content": "I want to explore sustainable fashion brands that use organic fabrics.",
-    "category": "future_preference"
   }
-]
 
-    m.store_preference(preference_data= test_json, user_id="test_user_id")
-    m.ltm.retrieve("Suggest me some nice colors", "test_user_id")
+    test_json_3 = {
+        "role": "user",
+        "content": "Hi",
+        "category": ""
+    }
+
+    m.store_preference(test_json_3, user_id="test_user_1")
+    print(m.ltm.memory.get_all(user_id="test_user_1"))
+    #print(m.ltm.retrieve(query="What are my favorite colors", user_id="test_user_1"))
+
+  #   test_json_list = [
+  # {
+  #   "role": "user",
+  #   "content": "I prefer wearing pastel colors in summer, especially light blue and mint green.",
+  #   "category": "color_preference"
+  # },
+  # {
+  #   "role": "user",
+  #   "content": "I usually wear casual outfits like jeans and sneakers during weekdays.",
+  #   "category": "style_history"
+  # },
+  # {
+  #   "role": "user",
+  #   "content": "I cannot wear wool sweaters because they make my skin itchy.",
+  #   "category": "allergy_constraint"
+  # },
+  # {
+  #   "role": "user",
+  #   "content": "For weddings, I like wearing traditional outfits with embroidery.",
+  #   "category": "occasion_wear"
+  # },
+  # {
+  #   "role": "user",
+  #   "content": "I want to explore sustainable fashion brands that use organic fabrics.",
+  #   "category": "future_preference"
+  # }
+  #   ]
+
+    # preferences1 = m.store_preference(test_json_1 , "test_user_id")
+    # print(preferences1)
+    #
+    # preferences2 = m.store_preference(test_json_2, "test_user_id")
+    # print(preferences2)
+
+    # response = m.stm.memory.get_all(user_id = "test_user_id")
+    # print(response)
+    #m.ltm.apply_feedback(user_feedback="I don't like pastel colors now, I like bright colors", user_id="test_user_id")
+    #m.ltm.retrieve("Suggest me some nice colors", "test_user_id")
