@@ -1,7 +1,11 @@
 from src.memory.base_memory import BaseMemory
 from typing import Optional, Dict, Any, List
 from src.configs.configs import LTM_CONFIG
+from src.prompts.prompts import UPDATE_MEMORY_PROMPT
 from mem0 import Memory
+from google import genai
+from google.genai import types
+import json
 import logging
 
 # Configure logging
@@ -99,6 +103,16 @@ class LongTermMemory(BaseMemory):
             logger.error(f"Failed to delete LTM: {e}")
             return False
 
+    def update(self, memory_id: str, user_id: str, data: str) -> bool:
+        """Delete specific long-term memory"""
+        try:
+            self.memory.update(memory_id=memory_id, user_id=user_id, data=data)
+            logger.info(f"Updated LTM {memory_id} for user {user_id}")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to delete LTM: {e}")
+            return False
+
     def get_user_preferences(self, user_id: str) -> Dict[str, Any]:
         """
         Get consolidated user fashion preferences
@@ -115,3 +129,87 @@ class LongTermMemory(BaseMemory):
         except Exception as e:
             logger.error(f"Failed to get user preferences: {e}")
             return {"style_preferences": [], "total_memories": 0}
+
+    def apply_feedback(self, user_feedback: str, user_id: str, model: str = "gemini-2.5-flash") -> bool:
+            """
+            Given a user feedback string (e.g. "I preferred slim-fit jeans"),
+            compare that with existing memory by calling Gemini + UPDATE_MEMORY_PROMPT,
+            get structured instructions, and apply them to Mem0.
+            """
+            try:
+                existing_memories = self.retrieve("fashion preferences style", user_id, limit=50)
+
+                formatted_memory = []
+                for idx, mem in enumerate(existing_memories):
+                    print(idx, mem)
+                    mem_id = str(mem.get("id", idx))
+                    mem_text = mem.get("content") or mem.get("text") or str(mem)
+                    formatted_memory.append({"id": mem_id, "text": mem_text})
+
+                prompt_text = f"""{UPDATE_MEMORY_PROMPT}
+                Old Memory:
+                {formatted_memory}
+                            
+                User Feedback:
+                ["{user_feedback}"]
+                """
+
+                # Step 3: call Gemini
+                client = genai.Client()
+                response = client.models.generate_content(
+                    model=model,
+                    contents=prompt_text,
+                    config=types.GenerateContentConfig(
+                        temperature=0.0,
+                        thinkingConfig=types.ThinkingConfig(thinking_budget=0)
+                    )
+                )
+                gemini_output = response.text
+                logger.info(f"Gemini response for memory update: {gemini_output}")
+
+                # Step 4: parse JSON output
+                feedback_json = json.loads(gemini_output)
+
+                # Step 5: apply operations
+                for item in feedback_json.get("memory", []):
+                    print(item)
+                    event = item.get("event")
+                    memory_id = item.get("id")
+                    text = item.get("text")
+
+                    if event == "ADD":
+                        self.store({"content": text}, user_id)
+                        logger.info(f"ADD → {text}")
+
+                    elif event == "UPDATE":
+                        self.update(memory_id, user_id, text)
+                        logger.info(f"UPDATE → {text} (old id {memory_id})")
+
+                    elif event == "DELETE":
+                        self.delete(memory_id, user_id)
+                        logger.info(f"DELETE → Removed memory {memory_id}")
+
+                    elif event == "NONE":
+                        logger.info(f"NONE → No change for memory {memory_id}")
+
+                    else:
+                        logger.warning(f"Unknown event type: {event}")
+
+                return True
+
+            except Exception as e:
+                logger.error(f"apply_feedback failed: {e}")
+                return False
+
+    def session_lived_store(self, data: Dict[str, Any], user_id: str, session_id: str) -> bool:
+        logger.warning("Session-lived storage not supported in LongTermMemory")
+        return False
+
+    def session_lived_retrieve(self, query: str, user_id: str, session_id: str) -> List[Dict[str, Any]]:
+        logger.warning("Session-lived retrieval not supported in LongTermMemory")
+        return []
+
+    def session_lived_delete(self, user_id: str, session_id: str) -> bool:
+        logger.warning("Session-lived deletion not supported in LongTermMemory")
+        return False
+
