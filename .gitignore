@@ -1,5 +1,8 @@
 # Existing ignores
 __pycache__/
+/storage/*
+/gfpgan/*
+/src/upscale/weights/*
 *.py[cod]
 *$py.class
 build/
