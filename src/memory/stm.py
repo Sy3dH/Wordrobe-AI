@@ -129,3 +129,12 @@ class ShortTermMemory(BaseMemory):
         except Exception as e:
             logger.error(f"Failed to get recent context: {e}")
             return {"recent_interactions": [], "context_count": 0}
+
+    # ---- Long-term stubs (not used here) ----
+    def store(self, data: Dict[str, Any], user_id: str) -> bool:
+        logger.warning("Long-term store not supported in ShortTermMemory")
+        return False
+
+    def retrieve(self, query: str, user_id: str) -> List[Dict[str, Any]]:
+        logger.warning("Long-term retrieve not supported in ShortTermMemory")
+        return []
