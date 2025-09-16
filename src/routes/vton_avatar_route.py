@@ -1,6 +1,7 @@
 import tempfile
 import shutil
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Enum
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from enum import Enum
 from src.VTON.try_on_service import make_fitroom_request, get_fitroom_task_status
 
 router = APIRouter()
