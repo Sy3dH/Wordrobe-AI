@@ -1,7 +1,6 @@
 import google.auth.transport.requests
 from google.oauth2 import service_account
 from firebase_admin import messaging, initialize_app, credentials
-from src.configs.configs import SERVICE_ACCOUNT_FILE
 import os
 
 SCOPES = ["https://www.googleapis.com/auth/firebase.messaging"]
@@ -16,7 +15,7 @@ def _get_access_token() -> str:
     :return: Access token as a string.
     """
     credentials_obj = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE, scopes=SCOPES
+        cred, scopes=SCOPES
     )
     request = google.auth.transport.requests.Request()
     credentials_obj.refresh(request)
