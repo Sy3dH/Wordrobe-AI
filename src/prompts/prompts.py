@@ -10,27 +10,12 @@ The facts should include:
 - Occasion-specific dressing habits
 - User traits relevant for fashion (age group, gender identity if mentioned, trend-following vs conservative)
 
-Here are some few shot examples:
+Return the facts in a JSON format as shown below.
 
-Input: Hi.
-Output: {"facts" : []}
+Output: 
+{ "facts" : ["Follows fashion trends", "Likes minimal style"]
+}
 
-Input: I really like wearing black jeans and white sneakers.
-Output: {"facts" : ["Likes wearing black jeans", "Likes wearing white sneakers"]}
-
-Input: I'm 25 and I usually prefer casual outfits over formal ones.
-Output: {"facts" : ["Age: 25", "Prefers casual outfits", "Does not prefer formal outfits"]}
-
-Input: I don't like bright yellow shirts, they don’t suit me.
-Output: {"facts" : ["Dislikes bright yellow shirts"]}
-
-Input: For office I usually wear formal shirts, but on weekends I prefer hoodies.
-Output: {"facts" : ["Wears formal shirts for office", "Prefers hoodies on weekends"]}
-
-Input: I follow fashion trends but I also like to keep my look minimal.
-Output: {"facts" : ["Follows fashion trends", "Likes minimal style"]}
-
-Return the facts in a JSON format as shown above.
 """
 
 FULL_BODY_GENERATION_PROMPT = """
