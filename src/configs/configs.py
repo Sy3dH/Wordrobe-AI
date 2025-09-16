@@ -20,12 +20,15 @@ LTM_CONFIG = {
         }
     },
     "vector_store": {
-        "provider": "redis",
+        "provider": "qdrant",
         "config": {
             "collection_name": "ltm",
-            "redis_url": "redis://localhost:6379/0"
+            "host": "localhost",
+            "port": 6333,
+            "embedding_model_dims":384
         }
-    }
+    },
+"version": "v1.1",
 }
 
 STM_CONFIG = {
@@ -46,10 +49,12 @@ STM_CONFIG = {
         }
     },
     "vector_store": {
-            "provider": "redis",
+            "provider": "qdrant",
             "config": {
                 "collection_name": "stm",
-                "redis_url": "redis://localhost:6379/0"
+                "host": "localhost",
+                "port": 6333,
+                "embedding_model_dims":384
             }
         }
 }
