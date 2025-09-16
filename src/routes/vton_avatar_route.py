@@ -1,17 +1,21 @@
 import tempfile
 import shutil
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Enum
 from src.VTON.try_on_service import make_fitroom_request, get_fitroom_task_status
 
 router = APIRouter()
 
 
+class ClothType(str, Enum):
+    upper = "upper"
+    lower = "lower"
+    full_set = "full_set"
+
 @router.post("/tryon")
 async def tryon(
     cloth_image: UploadFile = File(...),
     model_image: UploadFile = File(...),
-    cloth_type: str = Form(...),
-    hd_mode: bool = Form(True),
+    cloth_type: ClothType = Form(...),  # Dropdown-like values
 ):
     """
     Create a try-on task in Fitroom.
@@ -28,12 +32,12 @@ async def tryon(
             shutil.copyfileobj(model_image.file, model_tmp)
             model_path = model_tmp.name
 
-        # Call your existing function (expects file paths)
+        # Call your existing function (hd_mode fixed to False)
         result = make_fitroom_request(
             cloth_image=cloth_path,
             model_image=model_path,
-            cloth_type=cloth_type,
-            hd_mode=hd_mode,
+            cloth_type=cloth_type.value,
+            hd_mode=False,
         )
 
         return result
