@@ -131,14 +131,17 @@ class LongTermMemory(BaseMemory):
             logger.error(f"Failed to get user preferences: {e}")
             return {"style_preferences": [], "total_memories": 0}
 
-    def apply_feedback(self, user_feedback: str, user_id: str, model: str = "gemini-2.5-flash") -> bool:
+    def apply_feedback(self, user_feedback: str, user_id: str, filters: List[str], model: str = "gemini-2.5-flash",) -> bool:
             """
             Given a user feedback string (e.g. "I preferred slim-fit jeans"),
             compare that with existing memory by calling Gemini + UPDATE_MEMORY_PROMPT,
             get structured instructions, and apply them to Mem0.
             """
             try:
-                existing_memories = self.memory.get_all(user_id=user_id)
+                if filters:
+                    existing_memories = self.memory.search(f"{filters[0]}",user_id=user_id, filters={"category": filters[0]})
+                else:
+                    existing_memories = self.memory.get_all(user_id=user_id)
                 print(existing_memories)
                 formatted_memory = []
                 for idx, mem in enumerate(existing_memories["results"]):
