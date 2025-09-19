@@ -104,10 +104,10 @@ class LongTermMemory(BaseMemory):
             logger.error(f"Failed to delete LTM: {e}")
             return False
 
-    def update(self, memory_id: str, user_id: str, data: str) -> bool:
+    def update(self, memory_id: str, user_id: str, data: str, metadata: Dict) -> bool:
         """Delete specific long-term memory"""
         try:
-            self.memory.update(memory_id=memory_id, user_id=user_id, data=data)
+            self.memory.update(memory_id=memory_id, user_id=user_id, data=data, metadata=metadata)
             logger.info(f"Updated LTM {memory_id} for user {user_id}")
             return True
         except Exception as e:
@@ -131,17 +131,17 @@ class LongTermMemory(BaseMemory):
             logger.error(f"Failed to get user preferences: {e}")
             return {"style_preferences": [], "total_memories": 0}
 
-    def apply_feedback(self, user_feedback: str, user_id: str, filters: List[str], model: str = "gemini-2.5-flash",) -> bool:
+    def apply_feedback(self, user_feedback: str, user_id: str, scoring_filter: False, model: str = "gemini-2.5-flash",) -> bool:
             """
             Given a user feedback string (e.g. "I preferred slim-fit jeans"),
             compare that with existing memory by calling Gemini + UPDATE_MEMORY_PROMPT,
             get structured instructions, and apply them to Mem0.
             """
             try:
-                if filters:
-                    existing_memories = self.memory.search(f"{filters[0]}",user_id=user_id, filters={"category": filters[0]})
-                else:
-                    existing_memories = self.memory.get_all(user_id=user_id)
+                existing_memories = {}
+                if scoring_filter:
+                    existing_memories = self.memory.search("scoring related memories", user_id=user_id, filters={"category": "scoring"})
+                existing_memories.update(self.memory.get_all(user_id=user_id))
                 print(existing_memories)
                 formatted_memory = []
                 for idx, mem in enumerate(existing_memories["results"]):
@@ -149,14 +149,29 @@ class LongTermMemory(BaseMemory):
                     mem_text = mem.get("memory", None)
                     formatted_memory.append({"id": mem_id, "text": mem_text})
 
-                prompt_text = f"""{UPDATE_MEMORY_PROMPT}
-                Old Memory:
-                {formatted_memory}
-                            
-                User Feedback:
-                ["{user_feedback}"]
-                """
+                if scoring_filter:
+                    prompt_text = f"""{UPDATE_MEMORY_PROMPT}
+                    
+                    Old Memory:
+                    {formatted_memory}
+                                
+                    User Feedback:
+                    ["{user_feedback}"]
+                    
+                    If user feedback can help guide the AI in improving its scoring, store it as a memory—provided
+                     no prior memory exists.
+                    """
+                else:
+                    prompt_text = f"""{UPDATE_MEMORY_PROMPT}
 
+                                        Old Memory:
+                                        {formatted_memory}
+
+                                        User Feedback:
+                                        ["{user_feedback}"]
+                    """
+
+                print(prompt_text)
                 # Step 3: call Gemini
                 client = genai.Client()
                 response = client.models.generate_content(
@@ -181,11 +196,17 @@ class LongTermMemory(BaseMemory):
                     text = item.get("text")
 
                     if event == "ADD":
-                        self.store({"content": text}, user_id)
+                        if scoring_filter:
+                            self.store({"role":"user","content": text, "metadata": {"category": "scoring"}}, user_id)
+                        else:
+                            self.store({"role": "user", "content": text}, user_id)
                         logger.info(f"ADD → {text}")
 
                     elif event == "UPDATE":
-                        self.update(memory_id, user_id, text)
+                        if scoring_filter:
+                            self.update(memory_id, user_id, text, {"category": "scoring"})
+                        else:
+                            self.update(memory_id, user_id, text, None)
                         logger.info(f"UPDATE → {text} (old id {memory_id})")
 
                     elif event == "DELETE":
