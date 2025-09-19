@@ -6,6 +6,7 @@ from mem0 import Memory
 from google import genai
 from google.genai import types
 import json
+from src.models.feedback_schema import AllBlocks
 import logging
 
 # Configure logging
@@ -93,11 +94,11 @@ class LongTermMemory(BaseMemory):
             logger.error(f"Failed to retrieve LTM: {e}")
             return []
 
-    def delete(self, memory_id: str, user_id: str) -> bool:
+    def delete(self, memory_id: str) -> bool:
         """Delete specific long-term memory"""
         try:
-            self.memory.delete(memory_id=memory_id, user_id=user_id)
-            logger.info(f"Deleted LTM {memory_id} for user {user_id}")
+            self.memory.delete(memory_id=memory_id)
+            logger.info(f"Deleted LTM {memory_id} for user")
             return True
         except Exception as e:
             logger.error(f"Failed to delete LTM: {e}")
@@ -121,7 +122,7 @@ class LongTermMemory(BaseMemory):
             Dictionary of user preferences
         """
         try:
-            preferences = self.retrieve("fashion preferences style", user_id, limit=10)
+            preferences = self.retrieve("fashion preferences style", user_id)
             return {
                 "style_preferences": preferences,
                 "total_memories": len(preferences)
@@ -137,13 +138,12 @@ class LongTermMemory(BaseMemory):
             get structured instructions, and apply them to Mem0.
             """
             try:
-                existing_memories = self.retrieve("fashion preferences style", user_id, limit=50)
-
+                existing_memories = self.memory.get_all(user_id=user_id)
+                print(existing_memories)
                 formatted_memory = []
-                for idx, mem in enumerate(existing_memories):
-                    print(idx, mem)
+                for idx, mem in enumerate(existing_memories["results"]):
                     mem_id = str(mem.get("id", idx))
-                    mem_text = mem.get("content") or mem.get("text") or str(mem)
+                    mem_text = mem.get("memory", None)
                     formatted_memory.append({"id": mem_id, "text": mem_text})
 
                 prompt_text = f"""{UPDATE_MEMORY_PROMPT}
@@ -159,10 +159,10 @@ class LongTermMemory(BaseMemory):
                 response = client.models.generate_content(
                     model=model,
                     contents=prompt_text,
-                    config=types.GenerateContentConfig(
-                        temperature=0.0,
-                        thinkingConfig=types.ThinkingConfig(thinking_budget=0)
-                    )
+                    config = {
+                    "response_mime_type": "application/json",
+                    "response_schema": AllBlocks,
+                    }
                 )
                 gemini_output = response.text
                 logger.info(f"Gemini response for memory update: {gemini_output}")
@@ -186,7 +186,7 @@ class LongTermMemory(BaseMemory):
                         logger.info(f"UPDATE → {text} (old id {memory_id})")
 
                     elif event == "DELETE":
-                        self.delete(memory_id, user_id)
+                        self.delete(memory_id)
                         logger.info(f"DELETE → Removed memory {memory_id}")
 
                     elif event == "NONE":
