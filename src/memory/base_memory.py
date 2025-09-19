@@ -32,7 +32,7 @@ class BaseMemory(ABC):
         pass
 
     @abstractmethod
-    def delete(self, memory_id: str, user_id: str) -> bool:
+    def delete(self, memory_id: str) -> bool:
         """Delete specific memory"""
         pass
 
