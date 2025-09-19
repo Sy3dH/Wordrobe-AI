@@ -9,7 +9,7 @@ python-multipart
 realesrgan
 basicsr
 google-genai
-redis
-redisvl
+qdrant
 mem0ai
 sentence_transformers
+pydantic
