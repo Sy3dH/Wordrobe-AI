@@ -120,9 +120,10 @@ def memory_score_outfit(image_path: str, user_id: str, user_prompt: str = "") ->
 
 
 def feedback_score(feedback:str, user_id:str):
-    return m.ltm.apply_feedback(user_feedback=feedback, user_id=user_id, filters="scoring")
+    m = MemoryManager()
+    return m.ltm.apply_feedback(user_feedback=feedback, user_id=user_id, scoring_filter=True)
 
 if __name__ == "__main__":
-    print(m.ltm.memory.get_all(user_id="user_7"))
-    # print(memory_score_outfit("C:\\Users\Hamza\Downloads\\tmp57fo91m1_out-ezgif.com-webp-to-jpg-converter.jpg",
-    #                           "user_7", ""))
+    m = MemoryManager()
+    feedback_score("the scoring should also be on masculinity look of mine", "user_1")
+    print(m.ltm.memory.get_all(user_id="user_1"))
