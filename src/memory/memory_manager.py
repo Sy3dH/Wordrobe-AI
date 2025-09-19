@@ -3,12 +3,14 @@ from src.memory.stm import ShortTermMemory
 from src.utils import get_combined_config
 from src.configs.configs import (LTM_CONFIG, STM_CONFIG)
                                  #LTM_LLM_CONFIG, LLM_CONFIG, EMBEDDING_CONFIG)
+from openinference.instrumentation.google_genai import GoogleGenAIInstrumentor
 from typing import Dict, Any, Optional
 import logging
 import os
-from src.configs.settings import GOOGLE_API_KEY
+from src.configs.settings import GOOGLE_API_KEY,ARIZE_API_KEY
+from arize.otel import register
+import json
 
-os.environ["REDISVL_DISABLE_ANALYTICS"] = "1"
 os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
 
 logging.basicConfig(level=logging.INFO)
@@ -35,9 +37,14 @@ class MemoryManager:
         """Store user fashion preference in LTM"""
         return self.ltm.store(preference_data, user_id)
 
-    def store_context(self, context_data: Dict[str, Any], user_id: str) -> bool:
+    def store_context(self, context_data: Dict[str, Any], user_id: str, session_id: str) -> bool:
         """Store conversation context in STM"""
-        return self.stm.store(context_data, user_id)
+        return self.stm.session_lived_store(context_data, user_id, session_id)
+
+    def store_user_profile(self, context_data: Dict[str, Any], user_id: str, session_id: str) -> tuple[bool, bool]:
+        """Store user profile in STM & LTM (It will be stored in LTM if the context has facts)"""
+        return self.store_preference(context_data, user_id), self.store_context(context_data, user_id, session_id)
+
 
     def get_user_profile(self, user_id: str, session_id:str) -> Dict[str, Any]:
         """
@@ -58,64 +65,55 @@ class MemoryManager:
 
 if __name__ == "__main__":
 
+    import pandas as pd
+
+    # test_json_list = [
+    #     {
+    #         "role": "user",
+    #         "content": "Hey, I just joined the app. Can you help me personalize my style?"
+    #     },
+    #     {
+    #         "role": "assistant",
+    #         "content": "Of course! Let’s start with some basics. Do you have favorite colors you like to wear?"
+    #     }
+    # ]
+
+    tracer_provider = register(
+        space_id="U3BhY2U6MjgyNjc6Sm10Kw==",
+        api_key=ARIZE_API_KEY,
+        project_name="Wordrobe_chatbot",
+    )
+
     m = MemoryManager()
-    test_json_1 = {
-    "role": "user",
-    "content": "I prefer wearing pastel colors in summer, especially light blue and mint green.",
-    "category": "color_preference"
-    }
+    GoogleGenAIInstrumentor().instrument(tracer_provider=tracer_provider)
 
-    test_json_2 = {
-    "role": "user",
-    "content": "I usually wear casual outfits like jeans and sneakers during weekdays.",
-    "category": "style_history"
-  }
+    file_path = "D:\9D Tech Work\Wardrobe-POC\POC-4\Wordrobe-AI\\fashion_assistant_conversations_with_memory.csv"
+    df = pd.read_csv(file_path)
 
-    test_json_3 = {
-        "role": "user",
-        "content": "Hi",
-        "category": ""
-    }
+    for (user_id, session_id), group in df.groupby(["user_id", "session_id"]):
+        group_sorted = group.sort_values("turn")
+        for _, row in group_sorted.iterrows():
+            item = {
+                "role": row["role"],
+                "content": row["content"],
+                "memory": row["memory"]
+            }
+            m.store_user_profile(item, user_id=user_id, session_id=session_id)
 
-    m.store_preference(test_json_3, user_id="test_user_1")
-    print(m.ltm.memory.get_all(user_id="test_user_1"))
-    #print(m.ltm.retrieve(query="What are my favorite colors", user_id="test_user_1"))
+    user_ids = df["user_id"].unique().tolist()
+    for user_id in user_ids:
+        print(user_id)
+        ltm_data = m.ltm.memory.get_all(user_id=user_id)
+        stm_data = m.stm.memory.get_all(user_id=user_id)
 
-  #   test_json_list = [
-  # {
-  #   "role": "user",
-  #   "content": "I prefer wearing pastel colors in summer, especially light blue and mint green.",
-  #   "category": "color_preference"
-  # },
-  # {
-  #   "role": "user",
-  #   "content": "I usually wear casual outfits like jeans and sneakers during weekdays.",
-  #   "category": "style_history"
-  # },
-  # {
-  #   "role": "user",
-  #   "content": "I cannot wear wool sweaters because they make my skin itchy.",
-  #   "category": "allergy_constraint"
-  # },
-  # {
-  #   "role": "user",
-  #   "content": "For weddings, I like wearing traditional outfits with embroidery.",
-  #   "category": "occasion_wear"
-  # },
-  # {
-  #   "role": "user",
-  #   "content": "I want to explore sustainable fashion brands that use organic fabrics.",
-  #   "category": "future_preference"
-  # }
-  #   ]
+        combined = {
+            "user_id": user_id,
+            "LTM": ltm_data,
+            "STM": stm_data
+        }
 
-    # preferences1 = m.store_preference(test_json_1 , "test_user_id")
-    # print(preferences1)
-    #
-    # preferences2 = m.store_preference(test_json_2, "test_user_id")
-    # print(preferences2)
+        file_out = f"D:\9D Tech Work\Wardrobe-POC\POC-4\Wordrobe-AI\src\experiments\conversations\\user_based\\{user_id}_conversation.json"
+        with open(file_out, "w") as f:
+            json.dump(combined, f, indent=2)
 
-    # response = m.stm.memory.get_all(user_id = "test_user_id")
-    # print(response)
-    #m.ltm.apply_feedback(user_feedback="I don't like pastel colors now, I like bright colors", user_id="test_user_id")
-    #m.ltm.retrieve("Suggest me some nice colors", "test_user_id")
+        print(f"Exported conversation for {user_id} → {file_out}")
