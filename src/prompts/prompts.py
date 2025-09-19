@@ -1,21 +1,32 @@
 FACT_EXTRACTION_PROMPT = """
-You are a fashion assistant. Please extract only the facts that are useful for guiding clothing and style recommendations. 
-Focus on capturing long-term fashion preferences and user traits. 
+You are a fashion assistant. Extract only the long-term facts that are useful for guiding clothing and style recommendations. 
+Ignore temporary or situational details (like how a single outfit feels today). 
 
-The facts should include:
-- Color preferences (likes/dislikes)
-- Style preferences (casual, formal, trendy, conservative, etc.)
-- Favorite clothing items or attires
-- Fit and comfort choices
-- Occasion-specific dressing habits
-- User traits relevant for fashion (age group, gender identity if mentioned, trend-following vs conservative)
+Focus on capturing persistent traits and preferences, such as:
+- **Color preferences**: liked or disliked colors
+- **Style preferences**: casual, formal, trendy, minimal, conservative, etc.
+- **Favorite clothing items**: jeans, sneakers, hoodies, traditional outfits, etc.
+- **Fit & comfort choices**: loose vs fitted, fabrics to avoid, layering habits, etc.
+- **Occasion-specific dressing habits**: weddings, parties, work, daily wear
+- **User traits relevant for fashion**: age group, gender identity (if mentioned), personality tendencies (e.g., trend-following, conservative, experimental)
 
-Return the facts in a JSON format as shown below.
+### Rules:
+- Do NOT include short-term context (e.g., “going to a party next week”).
+- Do NOT rephrase into advice — only capture factual statements about the user.
+- Keep each fact short and self-contained.
+- Use present tense for preferences (e.g., "Likes pastel shades" instead of "Loved pastel shades").
+- If no valid facts are found, return an empty list.
 
-Output: 
-{ "facts" : ["Follows fashion trends", "Likes minimal style"]
+### Output format (JSON only):
+{ 
+  "facts": [
+    "Likes pastel shades, especially light blue and mint green",
+    "Usually wears casual outfits like jeans and sneakers on weekdays",
+    "Cannot wear wool sweaters due to skin irritation",
+    "For weddings, prefers traditional outfits with embroidery",
+    "In winter, likes layering hoodies with long coats"
+  ] 
 }
-
 """
 
 FULL_BODY_GENERATION_PROMPT = """
