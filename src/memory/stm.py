@@ -103,11 +103,11 @@ class ShortTermMemory(BaseMemory):
             logger.error(f"Failed to delete STM: {e}")
             return False
 
-    def delete(self, memory_id: str, user_id: str) -> bool:
+    def delete(self, memory_id: str) -> bool:
         """Delete specific short-term memory"""
         try:
-            self.memory.delete(memory_id=memory_id, user_id=user_id)
-            logger.info(f"Deleted STM {memory_id} for user {user_id}")
+            self.memory.delete(memory_id=memory_id)
+            logger.info(f"Deleted STM {memory_id} for user")
             return True
         except Exception as e:
             logger.error(f"Failed to delete STM: {e}")
