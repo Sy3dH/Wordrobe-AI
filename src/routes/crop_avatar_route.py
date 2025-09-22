@@ -7,8 +7,6 @@ from src.notify.fcm_server import send_notification
 
 router = APIRouter()
 
-#TODO: testing the notification
-
 def run_crop(job_id: str, file_path: str, filename: str, token: str):
     try:
         update_job(job_id, "running", 50)
