@@ -22,6 +22,7 @@ def run_upscale(job_id: str, file_path: str, outscale: float, face_enhance: bool
             "title": "Upscale Completed",
             "body": f"Your image has been upscaled successfully!",
             "job_id": job_id,
+            "tag":"upscaling",
             "processed_images": results
         }
         send_notification(token, data)
