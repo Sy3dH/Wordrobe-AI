@@ -2,10 +2,12 @@ import google.auth.transport.requests
 from google.oauth2 import service_account
 from firebase_admin import messaging, initialize_app, credentials
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 SCOPES = ["https://www.googleapis.com/auth/firebase.messaging"]
 
-cred = credentials.Certificate(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
+cred = credentials.Certificate(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
 initialize_app(cred)
 
 def _get_access_token() -> str:
