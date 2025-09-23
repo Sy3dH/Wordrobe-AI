@@ -16,6 +16,7 @@ def run_crop(job_id: str, file_path: str, filename: str, token: str):
                 "title": "Crop Completed",
                 "body": f"Your cropped avatar is ready!",
                 "job_id": job_id,
+                "tag": "cropping",
                 "cropped_image_path": cropped_path
                 }
         send_notification(token, data)
