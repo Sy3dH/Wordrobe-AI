@@ -17,13 +17,12 @@ def run_upscale(job_id: str, file_path: str, outscale: float, face_enhance: bool
         )
         update_job(job_id, "completed", 100, result={"processed_images": results})
 
-        # ✅ Send notification when done
         data = {
             "title": "Upscale Completed",
-            "body": f"Your image has been upscaled successfully!",
+            "body": "Your image has been upscaled successfully!",
             "job_id": job_id,
             "tag":"upscaling",
-            "processed_images": results
+            "processed_images": f"{results[0]}"
         }
         send_notification(token, data)
 
