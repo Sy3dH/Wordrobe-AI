@@ -1,5 +1,6 @@
 import tempfile
 import os
+from typing import Optional
 from fastapi import APIRouter, UploadFile, File, HTTPException, BackgroundTasks, Form
 from src.ai.scoring import score_outfit, score_outfit_with_clothing
 from src.manager.jobs_manager import update_job, create_job
@@ -7,13 +8,12 @@ from src.notify.fcm_server import send_notification
 
 router = APIRouter()
 
-def run_ai_style_score(job_id: str, tmp_path: str, token: str):
+def run_ai_style_score(job_id: str, tmp_path: str, token: Optional[str] = None):
     try:
         update_job(job_id, "running", 50)
         result = score_outfit(image_path=tmp_path)
         update_job(job_id, "completed", 100, result=result)
 
-        # ✅ Silent notification
         if token:
             data = {
                 "title": "Style Score Completed",
@@ -30,7 +30,7 @@ def run_ai_style_score(job_id: str, tmp_path: str, token: str):
             os.remove(tmp_path)
 
 
-def run_ai_style_score_avatar_and_clothing(job_id: str, tmp_path1: str, tmp_path2: str, token: str):
+def run_ai_style_score_avatar_and_clothing(job_id: str, tmp_path1: str, tmp_path2: str, token: Optional[str] = None):
     try:
         update_job(job_id, "running", 50)
         result = score_outfit_with_clothing(
@@ -61,7 +61,7 @@ def run_ai_style_score_avatar_and_clothing(job_id: str, tmp_path1: str, tmp_path
 async def ai_style_score(
     background_tasks: BackgroundTasks,
     image: UploadFile = File(...),
-    token: str = Form("")
+    token: Optional[str] = Form(None)
 ):
     """
     Queue an AI-powered style score job for a single outfit image.
@@ -75,7 +75,11 @@ async def ai_style_score(
     job_id = create_job()
     background_tasks.add_task(run_ai_style_score, job_id, tmp_path, token)
 
-    return {"job_id": job_id, "status": "queued"}
+    return {
+        "job_id": job_id,
+        "status": "queued",
+        "notification": "enabled" if token else "not provided"
+    }
 
 
 @router.post("/ai-style-score-avatar-and-clothing")
@@ -83,7 +87,7 @@ async def ai_style_score_avatar_and_clothing(
     background_tasks: BackgroundTasks,
     user_image: UploadFile = File(...),
     clothing_image: UploadFile = File(...),
-    token: str = Form("")
+    token: Optional[str] = Form(None)
 ):
     """
     Queue an AI-powered style score job for avatar + clothing images.
@@ -105,4 +109,8 @@ async def ai_style_score_avatar_and_clothing(
         run_ai_style_score_avatar_and_clothing, job_id, tmp_path1, tmp_path2, token
     )
 
-    return {"job_id": job_id, "status": "queued"}
+    return {
+        "job_id": job_id,
+        "status": "queued",
+        "notification": "enabled" if token else "not provided"
+    }
