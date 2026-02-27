@@ -5,7 +5,7 @@ LTM_CONFIG = {
     "llm": {
         "provider": "gemini",
         "config": {
-            "model": "gemini-2.0-flash-lite-001",
+            "model": "gemini-2.5-flash-lite",
             "api_key": GOOGLE_API_KEY,
             "temperature": 0.2,
             "max_tokens": 2000,
@@ -35,7 +35,7 @@ STM_CONFIG = {
     "llm": {
         "provider": "gemini",
         "config": {
-            "model": "gemini-2.0-flash-lite-001",
+            "model": "gemini-2.5-flash-lite",
             "api_key": GOOGLE_API_KEY,
             "temperature": 0.2,
             "max_tokens": 2000,
@@ -58,67 +58,6 @@ STM_CONFIG = {
             }
         }
 }
-
-# LTM_LLM_CONFIG = {
-#     "llm": {
-#         "provider": "gemini",
-#         "config": {
-#             "model": "gemini-2.0-flash-lite-001",
-#             "temperature": 0.2,
-#             "max_tokens": 2000,
-#             "top_p": 1.0
-#         },
-#         "custom_fact_extraction_prompt": FACT_EXTRACTION_PROMPT,
-#     }
-# }
-#
-# LLM_CONFIG = {
-#     "llm": {
-#         "provider": "gemini",
-#         "config": {
-#             "model": "gemini-2.0-flash-lite-001",
-#             "temperature": 0.2,
-#             "max_tokens": 2000,
-#             "top_p": 1.0
-#         },
-#     }
-# }
-#
-#
-# EMBEDDING_CONFIG = {
-#         "embedder": {
-#             "provider": "gemini",
-#         "config": {
-#             "model": "models/text-embedding-004",
-#             "embedding_dims": 768
-#                 }
-#         }
-# }
-#
-#
-# LTM_CONFIG = {
-#     "vector_store": {
-#         "provider": "redis",
-#         "config": {
-#             "collection_name": "fashion_stm",
-#             "embedding_model_dims": 768,
-#             "redis_url": "redis://localhost:6379"
-#         }
-#     },
-#     "version": "v1.1"
-# }
-#
-# STM_CONFIG = {
-#             "vector_store": {
-#                 "provider": "redis",
-#                 "config": {
-#                     "collection_name": "fashion_stm",
-#                     "embedding_model_dims": 768,
-#                     "redis_url": "redis://localhost:6379"
-#                 }
-#             },
-#             "version": "v1.1"
-# }
 
 FULL_BODY_GENERATION_CONFIG = {
     "prompt": FULL_BODY_GENERATION_PROMPT,
