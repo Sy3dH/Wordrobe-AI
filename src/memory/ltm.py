@@ -49,7 +49,6 @@ class LongTermMemory(BaseMemory):
             bool: Success status
         """
         try:
-            # Add metadata for LTM classification
             enriched_data = {
                 **data,
                 "memory_type": self.memory_type,
@@ -104,6 +103,15 @@ class LongTermMemory(BaseMemory):
             logger.error(f"Failed to delete LTM: {e}")
             return False
 
+    def get_all(self, user_id:str):
+        try:
+            memories = self.memory.get_all(filters={"user_id": user_id})
+            logger.info(f"Retrieved {len(self.memory)} LTM entries for user {user_id}")
+            return memories
+        except Exception as e:
+            logger.error(f"Failed to retrieve LTM: {e}")
+            return []
+
     def update(self, memory_id: str, user_id: str, data: str, metadata: Dict) -> bool:
         """Delete specific long-term memory"""
         try:
@@ -140,7 +148,8 @@ class LongTermMemory(BaseMemory):
             try:
                 existing_memories = {}
                 if scoring_filter:
-                    existing_memories = self.memory.search("scoring related memories", user_id=user_id, filters={"category": "scoring"})
+                    existing_memories = self.memory.search("scoring related memories", user_id=user_id,
+                                                           filters={"category": "scoring"})
                 existing_memories.update(self.memory.get_all(user_id=user_id))
                 print(existing_memories)
                 formatted_memory = []
@@ -197,7 +206,8 @@ class LongTermMemory(BaseMemory):
 
                     if event == "ADD":
                         if scoring_filter:
-                            self.store({"role":"user","content": text, "metadata": {"category": "scoring"}}, user_id)
+                            self.store({"role":"user","content": text, "metadata": {"category": "scoring"}},
+                                       user_id)
                         else:
                             self.store({"role": "user", "content": text}, user_id)
                         logger.info(f"ADD → {text}")

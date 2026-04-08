@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "your_project_name"
+version = "0.1.0"
+description = "Your project description"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "Syed Hamza" }
+]
+
+dependencies = [
+    "google-genai",
+    "qdrant-client",
+    "mem0ai",
+    "sentence-transformers",
+    "pydantic",
+    "python-dotenv>=1.2.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "ruff",
+    "pytest",
+    "mypy",
+    "ipykernel"
+]

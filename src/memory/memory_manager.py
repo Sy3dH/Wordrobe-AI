@@ -67,5 +67,4 @@ if __name__ == "__main__":
 
     for item in test_json:
         m.store_preference(item, user_id="user_1", session_id="test_1")
-    print(m.ltm.memory.get_all(user_id="user_1"))
-    print(m.stm.memory.get_all(user_id="user_1"))
+    print(m.ltm.retrieve(query="What colors I like?",user_id="user_1"))
